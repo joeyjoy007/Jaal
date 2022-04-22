@@ -7,11 +7,18 @@ import image2 from '../../../assets/images/download1.jpeg'
 import image3 from '../../../assets/images/download2.jpeg'
 
 
-const Welcome = () => {
+const Welcome = ({navigation}) => {
 
     const [active, setActive] = useState(0)
 
     const width = Dimensions.get("window").width
+
+    const goToSearch = ()=>{
+        navigation.navigate('SearchItem', {
+            itemId: 86,
+            otherParam: 'anything you want here',
+          });
+    }
 
     const change = ({nativeEvent})=>{
         const slide = Math.ceil(nativeEvent.contentOffset.x / nativeEvent.layoutMeasurement.width-.5)
@@ -124,12 +131,14 @@ const content=["Overview",
 showsHorizontalScrollIndicator={false}
 >
              {podCastContent.map((e)=>{
-                 return   <View style={style1.pCardView}>
-                 <Image source={e.image} style={{width:"auto",borderRadius:20,resizeMode:"cover",height:180}}/>
+                 return <TouchableOpacity onPress={()=>goToSearch()}> 
+                 <View style={style1.pCardView}>
+                 <Image key={e} source={e.image} style={{width:"auto",borderRadius:20,resizeMode:"cover",height:180}}/>
                 <View style={style1.pTextView}>
                     <Text style={style1.pText}>{e.name}</Text>
                 </View>
              </View>
+             </TouchableOpacity>  
              })}
 
 </ScrollView>

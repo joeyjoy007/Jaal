@@ -3,8 +3,12 @@ import React, {useState} from 'react';
 import Icon from 'react-native-vector-icons/Feather';
 import style1 from '../loginScreen/style';
 
-const Register = () => {
+const Register = ({navigation}) => {
   const [loading, setLoading] = useState(true);
+
+  const RegisterUser = ()=>{
+    navigation.navigate("Login")
+  }
 
   return (
     <View style={style1.container}>
@@ -45,7 +49,7 @@ const Register = () => {
 
       <TouchableOpacity
         style={style1.loginView1}
-        onPress={() => console.log('Pressed')}>
+        onPress={() => RegisterUser()}>
         <View style={style1.loginView0}>
           <Text style={style1.loginText1}>Register</Text>
         </View>

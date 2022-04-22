@@ -3,8 +3,13 @@ import React, {useState} from 'react';
 import Icon from 'react-native-vector-icons/Feather';
 import style1 from './style';
 
-const Login = () => {
+const Login = ({navigation}) => {
   const [loading, setLoading] = useState(true);
+
+  const Login = ()=>{
+    navigation.navigate("Welcome")
+  }
+
 
   return (
     <View style={style1.container}>
@@ -45,7 +50,7 @@ const Login = () => {
 
       <TouchableOpacity
         style={style1.loginView1}
-        onPress={() => console.log('Pressed')}>
+        onPress={() => Login()}>
         <View style={style1.loginView0}>
           <Text style={style1.loginText1}>Login</Text>
         </View>
