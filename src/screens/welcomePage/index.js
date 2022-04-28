@@ -1,17 +1,61 @@
 import {Image, StyleSheet,TouchableOpacity, Text, View, ScrollView, TouchableHighlight, Dimensions} from 'react-native';
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import style1 from './style';
 import { image } from '../../helpers/image';
 import image1 from '../../../assets/images/download.jpeg'
 import image2 from '../../../assets/images/download1.jpeg'
 import image3 from '../../../assets/images/download2.jpeg'
+import Icon from 'react-native-vector-icons/Ionicons'
+import { Storage } from '../../storage';
+import { AuthContext } from '../../context';
+import { getAllProducts } from '../../server/apis/product';
 
 
 const Welcome = ({navigation}) => {
 
     const [active, setActive] = useState(0)
+    const [responsee, setResponse] = useState([])
+    const [userInformation, setUserInformation] = useState("")
 
     const width = Dimensions.get("window").width
+
+    // const data = async()=>{
+    //     const u = Storage.getItem("userInfo")
+    //   console.log("USER INFO",u)
+    // }
+
+    // useEffect(() => {
+    //   data()
+      
+    // }, [])
+
+   const userInfo = async()=>{
+     const a = await Storage.getItem("userInfo")
+     setUserInformation(a)
+     
+   }
+
+    useEffect(() => {
+      try {
+        getAllProducts().then((res)=>{
+            setResponse(res.data.payload)    
+        })
+
+        userInfo()
+      } catch (error) {
+          console.log(error.message)
+      }
+    },[] )
+    
+
+    
+
+    const {signOut} = useContext(AuthContext)
+    
+    const Logout = ()=>{
+        console.log(signOut)
+        signOut()
+    }
 
     const goToSearch = ()=>{
         navigation.navigate('SearchItem', {
@@ -46,20 +90,41 @@ const Welcome = ({navigation}) => {
         image1,image2,image3
     ]
  
-const content=["Overview",
-"Design",
-"Photographer",
-"Architecture",
-"Groceries"
+const content=[
+    {
+        id:1,
+        name:"OverView"
+    },
+    {
+        id:2,
+        name:"Design"
+    },
+    {
+        id:3,
+        name:"Photographer"
+    },
+    {
+        id:4,
+        name:"Architecture"
+    },
+    {
+        id:5,
+        name:"Groceries"
+    }
 ]
 
 
   return (
     <View style={style1.container}>
       <View style={style1.wishView}>
+          <TouchableOpacity onPress={()=>Logout()}>
+          <View>
+             <Icon name='arrow-back' size={24} color="grey"/>
+          </View>
+          </TouchableOpacity>
         <View style={style1.nameView}>
           <Text style={style1.wishText}>Good Morning,</Text>
-          <Text style={style1.nameText}>Sophia</Text>
+          <Text style={style1.nameText}>{userInformation.name}</Text>
         </View>
 
         <View>
@@ -77,14 +142,15 @@ const content=["Overview",
         <View style={style1.scrollViewContent}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {content.map((item)=>{
+              
                 return <TouchableHighlight
                 activeOpacity={0.6}
                 underlayColor="#d9e3f0"
                 style={{borderRadius:10}}
-                key={item} onPress={()=>console.log("Pressed")}>
+                key={item.id} onPress={()=>console.log("Pressed")}>
 
                     
-                    <Text  style={[style1.items]}>{item}</Text>
+                    <Text  style={[style1.items]}>{item.name}</Text>
                     </TouchableHighlight>
                     
                 
@@ -103,8 +169,8 @@ const content=["Overview",
                   onScroll={change}
                 >
                 {images.map((image,k)=>{
-                   
-                return <Image source={image} style={{height:"auto",borderRadius:10,borderTopRightRadius:10,resizeMode:"cover",width:width}}/>
+                
+                return <Image key={k} source={image} style={{height:"auto",borderRadius:10,borderTopRightRadius:10,resizeMode:"cover",width:width}}/>
                 })}
         </ScrollView>
         {/* <View style={{display:"flex",justifyContent:"center",alignItems:"center"}}> */}
@@ -112,9 +178,9 @@ const content=["Overview",
         {images.map((image,index)=>{
            
             return (
-                <>
-                <Text key={index} style={index===active?style1.dotsActive1:style1.dots1}>•</Text>
-                </>
+                <View key={index} >
+                <Text style={index===active?style1.dotsActive1:style1.dots1}>•</Text>
+                </View>
             )
         })}
         </View>
@@ -130,8 +196,9 @@ const content=["Overview",
 <ScrollView horizontal style={{height:270}}
 showsHorizontalScrollIndicator={false}
 >
-             {podCastContent.map((e)=>{
-                 return <TouchableOpacity onPress={()=>goToSearch()}> 
+             {podCastContent.map((e,i)=>{
+         
+                 return <TouchableOpacity key={i} onPress={()=>goToSearch()}> 
                  <View style={style1.pCardView}>
                  <Image key={e} source={e.image} style={{width:"auto",borderRadius:20,resizeMode:"cover",height:180}}/>
                 <View style={style1.pTextView}>
