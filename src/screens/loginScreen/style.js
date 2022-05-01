@@ -35,6 +35,35 @@ const style1 = StyleSheet.create({
         backgroundColor:"#d9e3f0",
         borderRadius:10
      },
+
+    input1: {
+        marginTop:30,
+        height: 40,
+        backgroundColor:"blue",
+        borderRadius:10,
+        justifyContent:"center",
+        alignItems:"center",
+        width:"auto",
+        padding:10
+        
+     },
+     input1disable: {
+      marginTop:30,
+      height: 40,
+      backgroundColor:"grey",
+      borderRadius:10,
+      justifyContent:"center",
+      alignItems:"center",
+      width:"auto",
+      padding:10
+      
+   },
+     openImage:{
+    display:"flex",
+    flexDirection:"row",
+    justifyContent:"space-around"
+
+     },
      recoverView:{
         marginTop:40
      },

@@ -1,12 +1,17 @@
-import {Image, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, { useEffect } from 'react';
-import Icon from 'react-native-vector-icons/Ionicons'
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import React, {useEffect} from 'react';
+import Icon from 'react-native-vector-icons/Ionicons';
 import style1 from './style1';
 
 const SelfProfile = ({route, navigation}) => {
   const {userInfo} = route.params;
-
- 
 
   const aa = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
@@ -14,11 +19,17 @@ const SelfProfile = ({route, navigation}) => {
     <ScrollView>
       <View style={style1.container}>
         <View style={style1.View1}>
-
-
-          <TouchableOpacity style={{borderWidth:1,borderColor:"grey",width:36,height:36,borderRadius:18,
-          justifyContent:"center",alignItems:"center"
-          }} onPress={()=>navigation.goBack()}>
+          <TouchableOpacity
+            style={{
+              borderWidth: 1,
+              borderColor: 'grey',
+              width: 36,
+              height: 36,
+              borderRadius: 18,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            onPress={() => navigation.goBack()}>
             <View>
               <Icon name="arrow-back" size={24} color="grey" />
             </View>
@@ -56,6 +67,18 @@ const SelfProfile = ({route, navigation}) => {
             </ScrollView>
           </View>
         </>
+
+        <View style={{display:"flex",flexDirection:"row",justifyContent:"space-evenly",marginTop:30}}>
+          <View>
+            <Text style={style1.products}>Products Created</Text>
+            <Text style={style1.productsCount}>4</Text>
+          </View>
+
+          <View>
+            <Text style={style1.products}>Products Buy</Text>
+            <Text style={style1.productsCount}>2</Text>
+          </View>
+        </View>
       </View>
     </ScrollView>
   );

@@ -6,6 +6,7 @@ import {
   Pressable,
   Text,
   TextInput,
+  TouchableHighlight,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -20,7 +21,7 @@ import {emailValidation, mobileValidation} from '../../helpers/FormValidation';
 import {getApps, initializeApp} from 'firebase/app';
 import {ref, uploadBytes, getDownloadURL, getStorage} from 'firebase/storage';
 import {firebaseConfig} from '../../firebase';
-import * as Progress from 'react-native-progress';
+// import * as Progress from 'react-native-progress';
 
 const Register = ({navigation}) => {
   const [formState, setFormState] = useState({
@@ -37,6 +38,7 @@ const Register = ({navigation}) => {
   const [Image, setImage] = useState('');
   const [imageName, setImageName] = useState('second');
   const [progress, setProgress] = useState(0);
+  const [indicator, setIndicator] = useState(false)
 
   const setFields = (key, value) => {
     // setFormState([key] = value)
@@ -166,9 +168,13 @@ const Register = ({navigation}) => {
     });
 
     setImageUri(pickerResult);
+    if(pickerResult.assets[0].uri){
+      setUpload(true)
+    }
   };
 
   const uploadImage = () => {
+    setIndicator(true)
     handleImagePicked(imageUri);
     setProgress(0.1);
   };
@@ -178,7 +184,7 @@ const Register = ({navigation}) => {
     try {
       setProgress(0.2);
 
-      setUpload(true);
+      
       setProgress(0.3);
 
       if (!pickerResult.cancelled) {
@@ -186,10 +192,11 @@ const Register = ({navigation}) => {
         const uploadUrl = await uploadImageAsync(pickerResult.assets[0].uri);
 
         setImage(uploadUrl);
-        setFields("profilePic",uploadUrl)
+        setFields('profilePic', uploadUrl);
         setImageName(uploadUrl);
 
         setProgress(1);
+        setUpload(false)
         alert('Image uploaded successfully');
 
         setTimeout(() => {
@@ -317,32 +324,35 @@ const Register = ({navigation}) => {
           />
         </View>
 
-        <View style={{marginTop: 20}}>
-          <Pressable
-            onPress={() => openCamera()}
-            style={{
-              borderWidth: 1,
-              borderColor: 'red',
-              borderRadius: 5,
-              height: 60,
-              width: '50%',
-            }}>
-            <Text>Choose Image</Text>
-          </Pressable>
+        <View style={style1.openImage}>
+          <View>
+            <TouchableHighlight
+              onPress={() => openCamera()}
+              style={style1.input1}>
+              <Text>Choose Image</Text>
+            </TouchableHighlight>
+          </View>
 
-          <Pressable
+          <View>
+          {upload ?(
+            <TouchableHighlight
             onPress={() => uploadImage()}
-            style={{
-              borderWidth: 1,
-              borderColor: 'red',
-              width: '50%',
-              height: 30,
-            }}>
-            <Text>Upload Image</Text>
-          </Pressable>
-          <Progress.Bar progress={progress} width={200} />
+            style={style1.input1}>
+            {indicator ? <ActivityIndicator/>:<Text>Upload Image</Text>}
+          </TouchableHighlight>
+          ):(
+            <TouchableHighlight
+              disabled={true}
+              onPress={() => uploadImage()}
+              style={style1.input1disable}>
+              <Text>Upload Image</Text>
+            </TouchableHighlight>
+          )}
+          </View>
+
+          
         </View>
-        <View></View>
+        
       </View>
 
       {/* <View style={style1.recoverView}>
