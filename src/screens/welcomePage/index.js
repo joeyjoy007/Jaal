@@ -1,4 +1,4 @@
-import {Image, StyleSheet,TouchableOpacity, Text, View, ScrollView, TouchableHighlight, Dimensions} from 'react-native';
+import {Image, StyleSheet,TouchableOpacity, Text, View, ScrollView, TouchableHighlight, Dimensions, Pressable} from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import style1 from './style';
 import { image } from '../../helpers/image';
@@ -117,7 +117,9 @@ const content=[
   return (
     <View style={style1.container}>
       <View style={style1.wishView}>
-          <TouchableOpacity onPress={()=>Logout()}>
+          <TouchableOpacity style={{borderWidth:1,borderColor:"grey",width:36,height:36,borderRadius:18,
+          justifyContent:"center",alignItems:"center"
+          }} onPress={()=>Logout()}>
           <View>
              <Icon name='arrow-back' size={24} color="grey"/>
           </View>
@@ -127,9 +129,14 @@ const content=[
           <Text style={style1.nameText}>{userInformation.name}</Text>
         </View>
 
-        <View>
-          <Image source={{uri:image}} style={style1.image}/>
-        </View>
+        <Pressable onPress={()=>navigation.navigate("Profile",{
+            userInfo:userInformation,
+           
+        })}>
+            <View>
+                 <Image source={{uri:userInformation.profilePic}} style={style1.image}/>
+            </View>
+        </Pressable>
         
       </View>
       

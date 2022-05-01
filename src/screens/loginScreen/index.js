@@ -11,10 +11,11 @@ import { AuthContext } from '../../context';
 
 const Login = ({navigation}) => {
   const [formState, setFormState] = useState({email:"",password:""})
+  const [errorText, setErrorText] = useState()
   
   const {signIn} = useContext(AuthContext)
 
-  const Login = async(data)=>{
+  // const Login = async(data)=>{
   //  try {
   //   const response = await loginUser(data)
   //   // console.log(response)
@@ -34,8 +35,8 @@ const Login = ({navigation}) => {
   //    ToastHOC.errorAlert(error.message)
   //    console.log(error.message)
   //  }
-    signIn(data)
-  }
+    // signIn(data)
+  // }
 
   const setFields = (key,value)=>{
     setFormState({...formState,[key]:value})
@@ -47,28 +48,65 @@ const Login = ({navigation}) => {
   const error = {
     email,password
   }
-  const validateFields = ()=>{
-    const {email,password} = formState
-    if(!emailValidation.test(email)){
-      error["email"] = "write email correctly"
-    }
-    if(password.length<3){
-      error["password"] = "password length should be more than 3 characters"
-    }
+  // const validateFields = ()=>{
+  //   const {email,password} = formState
+  //   if(!emailValidation.test(email)){
+  //     error["email"] = "write email correctly"
+  //   }
+  //   if(password.length<3){
+  //     error["password"] = "password length should be more than 3 characters"
+  //   }
 
-    if(error.email === undefined && error.password === undefined){
-      Login(formState)
-    }
-    else {
-     if (error.email === undefined){
-        ToastHOC.errorAlert(error.password)
+  //   if(error.email === undefined && error.password === undefined){
+  //     Login(formState)
+  //   }
+  //   else {
+  //    if (error.email === undefined){
+  //       ToastHOC.errorAlert(error.password)
   
-      }
-      else if(error.password === undefined){
-        ToastHOC.errorAlert(error.email)
-      }
-    }
+  //     }
+  //     else if(error.password === undefined){
+  //       ToastHOC.errorAlert(error.email)
+  //     }
+  //   }
     
+  // }
+
+  const updateError = (error,SetErrorText)=>{
+    SetErrorText(error)
+    setTimeout(() => {
+      setErrorText('')
+    }, 2000)
+
+  }
+
+  const validateObj = (obj)=>{
+    return Object.values(obj).every(value=>value.trim())
+  }
+
+  const validateFields = ()=>{
+  const {email,password} = formState
+
+  if(!validateObj(formState)) return updateError("Fill All Fields",setErrorText)
+
+  if(!emailValidation.test(email)) return updateError("Write Email In Proper Manner",setErrorText)
+
+  if(!password.trim() || password.length < 8) return updateError("Password Should Be More Than 8 Characters",setErrorText)
+
+  return true
+  }
+
+  const Login = (data)=>{
+    if(validateFields()){
+      try {
+        signIn(data)
+      } catch (error) {
+        ToastHOC.errorAlert(error.message)
+      }
+    }else{
+      console.log(errorText)
+      ToastHOC.errorAlert("Login Failed")
+    }
   }
 
 
@@ -81,6 +119,11 @@ const Login = ({navigation}) => {
           <Text style={style1.welcomeText}>Welcome Back</Text>
         </View>
       </View>
+
+      {errorText?(
+        
+        <Text style={{color:"red",fontSize:13}}>{errorText}</Text>
+      ):(null)}
 
       <View style={style1.inputView}>
         <View>
@@ -115,7 +158,7 @@ const Login = ({navigation}) => {
 
       <TouchableOpacity
         style={style1.loginView1}
-        onPress={()=>validateFields()}>
+        onPress={()=>Login(formState)}>
         <View style={style1.loginView0}>
           <Text style={style1.loginText1}>Login</Text>
         </View>

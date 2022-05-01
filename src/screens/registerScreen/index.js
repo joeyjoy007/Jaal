@@ -1,100 +1,252 @@
-import {ActivityIndicator, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  Platform,
+  Pressable,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import Icon from 'react-native-vector-icons/Feather';
 import style1 from '../loginScreen/style';
-import { createUser } from '../../server/apis/user';
-
-import { ToastHOC } from '../../helpers/Toast';
-import { emailValidation, mobileValidation } from '../../helpers/FormValidation';
-import { Storage } from '../../storage';
-
+import {createUser} from '../../server/apis/user';
+import * as ImagePicker from 'react-native-image-picker';
+import {ToastHOC} from '../../helpers/Toast';
+import {emailValidation, mobileValidation} from '../../helpers/FormValidation';
+// import {Storage} from '../../storage';
+import {getApps, initializeApp} from 'firebase/app';
+import {ref, uploadBytes, getDownloadURL, getStorage} from 'firebase/storage';
+import {firebaseConfig} from '../../firebase';
+import * as Progress from 'react-native-progress';
 
 const Register = ({navigation}) => {
-const [formState, setFormState] = useState({
-  name:"",
-  email:"",
-  password:"",
-  mobileNumber:""
-})
-const [errorText, setErrorText] = useState("")
-const [loading, setLoading] = useState(false)
+  const [formState, setFormState] = useState({
+    name: '',
+    email: '',
+    password: '',
+    mobileNumber: '',
+    profilePic: '',
+  });
+  const [errorText, setErrorText] = useState();
+  const [loading, setLoading] = useState(false);
+  const [imageUri, setImageUri] = useState(null);
+  const [upload, setUpload] = useState(false);
+  const [Image, setImage] = useState('');
+  const [imageName, setImageName] = useState('second');
+  const [progress, setProgress] = useState(0);
 
+  const setFields = (key, value) => {
+    // setFormState([key] = value)
+    // console.log(formState)
+    setFormState({...formState, [key]: value});
+  };
+  let email, mobileNumber;
 
-const setFields = (key,value)=>{
-  // setFormState([key] = value)
-  // console.log(formState)
-  setFormState({...formState,[key]:value})
+  const error = {
+    email,
+    mobileNumber,
+  };
 
- 
-
-}
-let email,mobileNumber;
-
-const error = {
-  email,mobileNumber
-}
-
-  const RegisterUser = async(data)=>{
-   
-   try {
-     setLoading(true)
-    const response = await createUser(data)
-// console.log("RES",response)
-    if(response.status === 1){
-      setLoading(false)
-      // console.log("RESPO",response)
-    ToastHOC.successAlert("Registeration Success",response.message)
-    navigation.replace("Login")
-    }
-   } catch (error) {
-     setLoading(false)
-     ToastHOC.errorAlert(error.message)
-   }
-  
+  if (!getApps().length) {
+    initializeApp(firebaseConfig);
   }
 
-  const validateFields = ()=>{
-    const {email,mobileNumber} = formState
-   
-    if(!emailValidation.test(email)){
-    error["email"] = "write email correctly"
+  //   const RegisterUser = async(data)=>{
 
+  //    try {
+  //      setLoading(true)
+  //     const response = await createUser(data)
+  // // console.log("RES",response)
+  //     if(response.status === 1){
+  //       setLoading(false)
+  //       // console.log("RESPO",response)
+  //     ToastHOC.successAlert("Registeration Success",response.message)
+  //     navigation.replace("Login")
+  //     }
+  //    } catch (error) {
+  //      setLoading(false)
+  //      ToastHOC.errorAlert(error.message)
+  //    }
 
-    }
-    if(!mobileValidation.test(mobileNumber)){
-    error["mobileNumber"] = "write mobile number correctly" 
-  
+  //   }
 
-    }
+  // const validateFields = ()=>{
+  //   const {email,mobileNumber} = formState
 
-    if(error.mobileNumber === undefined && error.email=== undefined){
-      // console.log("Registering")
-      RegisterUser(formState)  
-    }
-    else{
-      
-      if(error.email === undefined){
-        ToastHOC.errorAlert(error.mobileNumber)
+  //   if(!emailValidation.test(email)){
+  //   error["email"] = "write email correctly"
+
+  //   }
+  //   if(!mobileValidation.test(mobileNumber)){
+  //   error["mobileNumber"] = "write mobile number correctly"
+
+  //   }
+
+  //   if(error.mobileNumber === undefined && error.email=== undefined){
+  //     // console.log("Registering")
+  //     RegisterUser(formState)
+  //   }
+  //   else{
+
+  //     if(error.email === undefined){
+  //       ToastHOC.errorAlert(error.mobileNumber)
+  //     }
+  //     else {
+  //       ToastHOC.errorAlert(error.email)
+  //     }
+
+  //   }
+  // }
+
+  const updateError = (error, setErrorText) => {
+    setErrorText(error);
+
+    setTimeout(() => {
+      setErrorText('');
+    }, 1000);
+  };
+
+  const isValidObjectField = obj => {
+    return Object.values(obj).every(value => value.trim());
+  };
+
+  const isValidForm = () => {
+    if (!isValidObjectField(formState))
+      return updateError('Fill All Fields', setErrorText);
+
+    if (!formState.name.trim() || formState.name.length < 3)
+      return updateError('Name Should Be More Than 3 Characters', setErrorText);
+
+    if (!emailValidation.test(formState.email))
+      return updateError('Write Email In Proper Manner', setErrorText);
+
+    if (!formState.password.trim() || formState.password.length < 8)
+      return updateError(
+        'Password Should Be Equal To Or More Than 8 Characters',
+        setErrorText,
+      );
+
+    if (!mobileValidation.test(formState.mobileNumber))
+      return updateError('Write Mobile Number Correctly', setErrorText);
+
+    return true;
+  };
+
+  const RegisterUser = async data => {
+    if (isValidForm()) {
+      try {
+        setLoading(true);
+        const response = await createUser(data);
+
+        if (response.status === 1) {
+          setLoading(false);
+          // console.log("RESPO",response)
+          ToastHOC.successAlert('Registeration Success', response.message);
+          navigation.replace('Login');
+        }
+      } catch (error) {
+        setLoading(false);
+        ToastHOC.errorAlert(error.message);
       }
-      else {
-        ToastHOC.errorAlert(error.email)
-      }
-      
+    } else {
+      // console.log(errorText)
+      // errorText ?(
+      //   ToastHOC.errorAlert(errorText,"lhjgf")
+      // ):(null)
     }
+  };
+
+  const openCamera = async () => {
+    let pickerResult = await ImagePicker.launchImageLibrary({
+      allowsEditing: true,
+      aspect: [4, 3],
+    });
+
+    setImageUri(pickerResult);
+  };
+
+  const uploadImage = () => {
+    handleImagePicked(imageUri);
+    setProgress(0.1);
+  };
+
+  const handleImagePicked = async pickerResult => {
+    // setLoading(true)
+    try {
+      setProgress(0.2);
+
+      setUpload(true);
+      setProgress(0.3);
+
+      if (!pickerResult.cancelled) {
+        setProgress(0.4);
+        const uploadUrl = await uploadImageAsync(pickerResult.assets[0].uri);
+
+        setImage(uploadUrl);
+        setFields("profilePic",uploadUrl)
+        setImageName(uploadUrl);
+
+        setProgress(1);
+        alert('Image uploaded successfully');
+
+        setTimeout(() => {
+          setProgress(0);
+        }, 2000);
+      }
+      // setLoading(false)
+      // setChangeButton(true)
+    } catch (e) {
+      // setLoading(false)
+      alert(e.message);
+    } finally {
+      // setUpload(false)
+    }
+  };
+
+  async function uploadImageAsync(uri) {
+    const blob = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function () {
+        resolve(xhr.response);
+      };
+      setProgress(0.5);
+      xhr.onerror = function (e) {
+        reject(new TypeError('Network request failed'));
+      };
+
+      xhr.responseType = 'blob';
+      setProgress(0.6);
+      xhr.open('GET', uri, true);
+
+      xhr.send(null);
+      setProgress(0.7);
+    });
+    const fileRef = ref(
+      getStorage(),
+      `jaalProfile/${imageUri.assets[0].fileName}`,
+    );
+    setProgress(0.8);
+
+    const result = await uploadBytes(fileRef, blob);
+
+    // We're done with the blob, close and release it
+    blob.close();
+    setProgress(0.9);
+
+    return await getDownloadURL(fileRef);
   }
 
-  const y = async()=>{
-    console.log("REGISTEReee",await Storage.getItem("token"))
-  }
+  // const uploadImage  = async()=>{
+  //     if(imageUri===null){
+  //       return;
+  //     }
+  //     else{
 
-  useEffect(() => {
-    y()
-  }, [])
-  
-
-
-
-
+  //     }
+  // }
   return (
     <View style={style1.container}>
       <View style={style1.loginView}>
@@ -103,58 +255,94 @@ const error = {
         {/* <View style={style1.welcomeView}>
           <Text style={style1.welcomeText}>Welcome Back</Text>
         </View> */}
+        {errorText ? (
+          <Text style={{color: 'red', fontSize: 12, marginTop: 10}}>
+            {errorText}
+          </Text>
+        ) : null}
       </View>
 
       <View style={style1.inputView}>
-      <View>
-        <TextInput
-          style={style1.input}
-          underlineColorAndroid="transparent"
-          value={formState.name}
-          onChangeText={(name)=>{setFields("name",name)}}
-          placeholder="Name"
-          placeholderTextColor="#9a73ef"
-          autoCapitalize="none"
-        />
-
-</View>
+        <View>
+          <TextInput
+            style={style1.input}
+            underlineColorAndroid="transparent"
+            value={formState.name}
+            onChangeText={name => {
+              setFields('name', name);
+            }}
+            placeholder="Name"
+            placeholderTextColor="#9a73ef"
+            autoCapitalize="none"
+          />
+        </View>
         <View>
           {/* <Icon name="user" size={24} /> */}
           <TextInput
             style={style1.input}
             underlineColorAndroid="transparent"
             value={formState.email}
-            onChangeText={(email)=>{setFields("email",email)}}
+            onChangeText={email => {
+              setFields('email', email);
+            }}
             placeholder="Email"
             placeholderTextColor="#9a73ef"
             autoCapitalize="none"
           />
         </View>
-    <View>
-        <TextInput
-          style={style1.input}
-          underlineColorAndroid="transparent"
-          value={formState.password}
-          onChangeText={(password)=>{setFields("password",password)}}
-          placeholder="Password"
-          placeholderTextColor="#9a73ef"
-          autoCapitalize="none"
-        />
+        <View>
+          <TextInput
+            style={style1.input}
+            underlineColorAndroid="transparent"
+            value={formState.password}
+            onChangeText={password => {
+              setFields('password', password);
+            }}
+            placeholder="Password"
+            placeholderTextColor="#9a73ef"
+            autoCapitalize="none"
+          />
+        </View>
+        <View>
+          <TextInput
+            style={style1.input}
+            underlineColorAndroid="transparent"
+            value={formState.mobileNumber}
+            onChangeText={mobileNumber => {
+              setFields('mobileNumber', mobileNumber);
+            }}
+            placeholder="Mobile Number"
+            placeholderTextColor="#9a73ef"
+            autoCapitalize="none"
+          />
+        </View>
 
-</View>
-    <View>
-        <TextInput
-          style={style1.input}
-          underlineColorAndroid="transparent"
-          value={formState.mobileNumber}
-          onChangeText={(mobileNumber)=>{setFields("mobileNumber",mobileNumber)}}
-          placeholder="Mobile Number"
-          placeholderTextColor="#9a73ef"
-          autoCapitalize="none"
-        />
+        <View style={{marginTop: 20}}>
+          <Pressable
+            onPress={() => openCamera()}
+            style={{
+              borderWidth: 1,
+              borderColor: 'red',
+              borderRadius: 5,
+              height: 60,
+              width: '50%',
+            }}>
+            <Text>Choose Image</Text>
+          </Pressable>
 
-</View>
- 
+          <Pressable
+            onPress={() => uploadImage()}
+            style={{
+              borderWidth: 1,
+              borderColor: 'red',
+              width: '50%',
+              height: 30,
+            }}>
+            <Text>Upload Image</Text>
+          </Pressable>
+          <Progress.Bar progress={progress} width={200} />
+        </View>
+        <View></View>
       </View>
 
       {/* <View style={style1.recoverView}>
@@ -163,20 +351,24 @@ const error = {
 
       <TouchableOpacity
         style={style1.loginView1}
-       onPress={()=>validateFields()}>
+        onPress={() => RegisterUser(formState)}>
         <View style={style1.loginView0}>
-          <Text style={style1.loginText1}>{loading ? <ActivityIndicator/>:"Register"}</Text>
+          <Text style={style1.loginText1}>
+            {loading ? <ActivityIndicator /> : 'Register'}
+          </Text>
         </View>
-       
       </TouchableOpacity>
+
+      {/* <Image source={{uri:imageUri}} style={{width:40,height:40}}/> */}
 
       <TouchableOpacity
         style={style1.loginView1}
-       onPress={()=>navigation.navigate("Login")}>
+        onPress={() => navigation.navigate('Login')}>
         <View style={style1.loginView0}>
-          <Text style={style1.loginText1}>{loading ? <ActivityIndicator/>:"Login"}</Text>
+          <Text style={style1.loginText1}>
+            {loading ? <ActivityIndicator /> : 'Login'}
+          </Text>
         </View>
-       
       </TouchableOpacity>
     </View>
   );

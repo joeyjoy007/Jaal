@@ -14,6 +14,8 @@ import { Storage } from '../storage'
 import AsyncStorage from '@react-native-community/async-storage'
 import axios from 'axios'
 
+import SelfProfile from '../screens/profiles/selfProfile/selfProfile'
+
 
 
 
@@ -153,6 +155,7 @@ const AppRoutes = () => {
            <Stack.Screen name="Welcome" component={Welcome} />
            <Stack.Screen name="SearchItem" component={ItemDetailSearch} />
            <Stack.Screen name="DetailItem" component={ScreenDetail} />
+           <Stack.Screen name="Profile" component={SelfProfile}/>
            </>
          
       ):(

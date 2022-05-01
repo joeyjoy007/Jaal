@@ -8,7 +8,8 @@ export class ToastHOC{
             position:"top",
             text1:text1,
             text2:text2,
-            autoHide:true
+            autoHide:true,
+            visibilityTime:1000
         })
     }
 
