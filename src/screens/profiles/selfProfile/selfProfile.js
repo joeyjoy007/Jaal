@@ -13,6 +13,7 @@ import style1 from './style1';
 const SelfProfile = ({route, navigation}) => {
   const {userInfo} = route.params;
 
+
   const aa = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
   return (
@@ -68,10 +69,31 @@ const SelfProfile = ({route, navigation}) => {
           </View>
         </>
 
-        <View style={{display:"flex",flexDirection:"row",justifyContent:"space-evenly",marginTop:30}}>
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-evenly',
+            marginTop: 30,
+          }}>
           <View>
             <Text style={style1.products}>Products Created</Text>
             <Text style={style1.productsCount}>4</Text>
+            <TouchableOpacity
+            onPress={()=>navigation.navigate("CreateProduct",{
+              id:userInfo
+            })}
+              style={{
+                borderWidth: 1,
+                borderColor: 'red',
+                width: 150,
+                height: 40,
+                borderRadius: 10,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <Text>CREATE PRODUCT</Text>
+            </TouchableOpacity>
           </View>
 
           <View>

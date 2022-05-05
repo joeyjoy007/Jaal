@@ -12,17 +12,17 @@ import style1 from './style';
 // import {image} from '../../helpers/image';
 
 const ScreenDetail = ({route, navigation}) => {
-  const {image} = route.params;
+  const {productDetail} = route.params;
 
   return (
     <ScrollView>
     <View>
       <View style={style1.imageView}>
-        <Image style={style1.image} source={image} />
+        <Image style={style1.image} source={{uri:productDetail.productImage}} />
         <View style={style1.container}>
           <View style={style1.textView}>
-            <Text style={style1.text}>Cotton Trench Coat</Text>
-            <Text style={[style1.text]}>$72.4</Text>
+            <Text style={style1.text}>{productDetail.productName}</Text>
+            <Text style={[style1.text]}>${productDetail.productPrice}</Text>
           </View>
 
           <View style={{marginTop: 10}}>
@@ -49,7 +49,7 @@ const ScreenDetail = ({route, navigation}) => {
             <View style={style1.smallCard}>
               <View style={style1.designer}>
                 <View style={{display: 'flex', justifyContent: 'center'}}>
-                  <Image source={image} style={style1.profile} />
+                  <Image source={productDetail.productImage} style={style1.profile} />
                 </View>
                 <View style={style1.designText}>
                   <Text style={style1.design1}>Designer</Text>

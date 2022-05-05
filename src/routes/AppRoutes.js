@@ -15,6 +15,8 @@ import AsyncStorage from '@react-native-community/async-storage'
 import axios from 'axios'
 
 import SelfProfile from '../screens/profiles/selfProfile/selfProfile'
+import CreateProduct from '../screens/product/createProduct'
+import FilterProduct from '../screens/filter&sort/filterPage'
 
 
 
@@ -156,6 +158,8 @@ const AppRoutes = () => {
            <Stack.Screen name="SearchItem" component={ItemDetailSearch} />
            <Stack.Screen name="DetailItem" component={ScreenDetail} />
            <Stack.Screen name="Profile" component={SelfProfile}/>
+           <Stack.Screen name="CreateProduct" component={CreateProduct}/>
+           <Stack.Screen name="FilterProduct" component={FilterProduct}/>
            </>
          
       ):(

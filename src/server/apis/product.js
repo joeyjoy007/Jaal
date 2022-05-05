@@ -18,6 +18,13 @@ error=>{
 
 
 export const getAllProducts = async()=>{
- 
     return await productAxios.get('/fetchAllProducts')
+}
+
+export const addProduct = async(data)=>{
+    return await productAxios.post('/createProduct',data)
+}
+
+export const filterProduct = async(price)=>{
+    return await productAxios.get(`/filterProducts?type=${price}`)
 }
