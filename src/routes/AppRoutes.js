@@ -1,7 +1,5 @@
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useMemo, useReducer, useState } from 'react'
-import Login from '../screens/loginScreen'
-import Register from '../screens/registerScreen'
 import Welcome from '../screens/welcomePage'
 import {AuthContext} from '../context/index'
 import ItemDetailSearch from '../screens/detailItem'
@@ -11,12 +9,11 @@ import RootStackScreen from './RootStackNavigator'
 import { loginUser } from '../server/apis/user'
 import { ToastHOC } from '../helpers/Toast'
 import { Storage } from '../storage'
-import AsyncStorage from '@react-native-community/async-storage'
-import axios from 'axios'
-
 import SelfProfile from '../screens/profiles/selfProfile/selfProfile'
 import CreateProduct from '../screens/product/createProduct'
 import FilterProduct from '../screens/filter&sort/filterPage'
+import Checkout from '../screens/checkout'
+
 
 
 
@@ -160,6 +157,7 @@ const AppRoutes = () => {
            <Stack.Screen name="Profile" component={SelfProfile}/>
            <Stack.Screen name="CreateProduct" component={CreateProduct}/>
            <Stack.Screen name="FilterProduct" component={FilterProduct}/>
+           <Stack.Screen name="Checkout" component={Checkout}/>
            </>
          
       ):(

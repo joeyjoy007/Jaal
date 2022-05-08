@@ -86,7 +86,12 @@ const CreateProduct = ({navigation,route}) => {
   const AddProduct = async data => {
     if (isValidForm()) {
       try {
-        addProduct(formState)
+        addProduct(formState).then((response)=>{
+         
+          if(response.data.status===1){
+            ToastHOC.successAlert("Product added")
+          }
+        })
       } catch (error) {
         setLoading(false);
         ToastHOC.errorAlert(error.message);
@@ -213,7 +218,7 @@ const CreateProduct = ({navigation,route}) => {
             }}
             placeholder="Product name"
             placeholderTextColor="#9a73ef"
-            autoCapitalize="none"
+            autoCapitalize="words"
           />
         </View>
         <View>
@@ -228,6 +233,8 @@ const CreateProduct = ({navigation,route}) => {
             placeholder="Product Price"
             placeholderTextColor="#9a73ef"
             autoCapitalize="none"
+            keyboardType="numeric"
+            maxLength={6}
           />
         </View>
 

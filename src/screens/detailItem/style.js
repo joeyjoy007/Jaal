@@ -3,6 +3,7 @@ import {StyleSheet} from 'react-native';
 const style1 = StyleSheet.create({
   container: {
     margin: 20,
+    flex:1
   },
   searchPlateView: {
     marginTop: 50,

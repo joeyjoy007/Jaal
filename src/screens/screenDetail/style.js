@@ -7,7 +7,7 @@ const style1 = StyleSheet.create({
     height: 400,
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
-    resizeMode: 'contain',
+    resizeMode:"contain"
   },
   container: {
     margin: 20,

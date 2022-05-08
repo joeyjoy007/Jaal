@@ -41,7 +41,7 @@ const FilterProduct = ({navigation}) => {
         <Slider
           style={{width: 200, height: 40}}
           minimumValue={200}
-          maximumValue={20000}
+          maximumValue={100000}
           minimumTrackTintColor="tomato"
           maximumTrackTintColor="#000000"
           thumbTintColor="tomato"
