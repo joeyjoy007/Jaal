@@ -25,3 +25,7 @@ export const addAnotherProduct = async(data)=>{
     
     return await cartAxios.post('/addAnother',data)
 }
+
+export const removeItemFromCart = async(data)=>{
+    return await cartAxios.post('/removeFromCart',data)
+}
